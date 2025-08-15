@@ -15,10 +15,10 @@ export const auth = defineAuth({
       mutable: true,
       required: true,
     },
-    // Maps to Cognito standard attribute 'name'
-    fullname: {
+    // Maps to Cognito standard attribute 'phone_number'
+    phoneNumber: {
       mutable: true,
-      required: true,
+      required: false,
     },
   },
   groups: ['USERS', 'ADMINS', 'PREMIUM_USERS'],

@@ -13,6 +13,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Authenticator
       loginMechanisms={['email', 'username']}
+      signUpAttributes={[
+        'email',
+        'phone_number',
+      ]}
     >
       <App />
     </Authenticator>

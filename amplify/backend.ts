@@ -10,5 +10,5 @@ const backend = defineBackend({
 });
 
 // Grant the post-confirmation function access to the data resource
-backend.data.resources.graphqlApi.grantQuery(backend.postConfirmation.resources.lambda, "UserProfile");
 backend.data.resources.graphqlApi.grantMutation(backend.postConfirmation.resources.lambda, "UserProfile");
+backend.data.resources.graphqlApi.grantQuery(backend.postConfirmation.resources.lambda, "UserProfile");

@@ -5,7 +5,10 @@ import {
   CognitoIdentityProviderClient,
   AdminAddUserToGroupCommand
 } from '@aws-sdk/client-cognito-identity-provider';
-import { env } from '$amplify/env/post-confirmation';
+// Environment variable access - will be available at runtime
+const env = {
+  GROUP_NAME: process.env.GROUP_NAME || 'USERS'
+};
 
 const cognitoClient = new CognitoIdentityProviderClient();
 
@@ -52,7 +55,7 @@ async function createUserProfile(userData: UserData, groupName: string): Promise
     userId: userData.userName,
     email: userData.email,
     givenName: userData.givenName,
-    plan: groupName === 'PREMIUM_USERS' ? 'PREMIUM' : 'FREE',
+    plan: (groupName === 'PREMIUM_USERS' ? 'PREMIUM' : 'FREE') as 'FREE' | 'PREMIUM',
     visibilityBoost: false,
     language: 'en' // Default language
   };
@@ -68,7 +71,7 @@ async function createUserProfile(userData: UserData, groupName: string): Promise
     console.error(`❌ Failed to create UserProfile for user ${userData.userName}:`, {
       errors: profileResponse.errors
     });
-    throw new Error(`Failed to create user profile: ${profileResponse.errors?.map(e => e.message).join(', ')}`);
+    throw new Error(`Failed to create user profile: ${profileResponse.errors?.map((e: any) => e.message).join(', ')}`);
   }
 }
 

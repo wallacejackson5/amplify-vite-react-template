@@ -13,6 +13,19 @@ const schema = a.schema({
       content: a.string(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
+  
+  UserProfile: a
+    .model({
+      userId: a.string().required(),
+      email: a.string().required(),
+      givenName: a.string(),
+      plan: a.enum(['FREE', 'PREMIUM']),
+      visibilityBoost: a.boolean(),
+      language: a.string(),
+    })
+    .authorization((allow) => [
+      allow.authenticated().to(['create', 'read', 'update'])
+    ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;

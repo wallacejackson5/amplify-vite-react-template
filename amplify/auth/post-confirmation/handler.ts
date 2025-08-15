@@ -5,7 +5,6 @@ import {
   CognitoIdentityProviderClient,
   AdminAddUserToGroupCommand
 } from '@aws-sdk/client-cognito-identity-provider';
-import { env } from '$amplify/env/post-confirmation';
 
 const cognitoClient = new CognitoIdentityProviderClient();
 
@@ -52,7 +51,7 @@ async function createUserProfile(userData: UserData, groupName: string): Promise
     userId: userData.userName,
     email: userData.email,
     givenName: userData.givenName,
-    plan: groupName === 'PREMIUM_USERS' ? 'PREMIUM' : 'FREE',
+    plan: groupName === 'PREMIUM_USERS' ? 'PREMIUM' as const : 'FREE' as const,
     visibilityBoost: false,
     language: 'en' // Default language
   };
@@ -68,7 +67,7 @@ async function createUserProfile(userData: UserData, groupName: string): Promise
     console.error(`❌ Failed to create UserProfile for user ${userData.userName}:`, {
       errors: profileResponse.errors
     });
-    throw new Error(`Failed to create user profile: ${profileResponse.errors?.map(e => e.message).join(', ')}`);
+    throw new Error(`Failed to create user profile: ${profileResponse.errors?.map((e: any) => e.message).join(', ')}`);
   }
 }
 
@@ -120,13 +119,13 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
   // Execute both operations, logging failures but not blocking user registration
   const groupResult = await handleOperation(
     'Group assignment',
-    () => addUserToGroup(userData, env.GROUP_NAME),
+    () => addUserToGroup(userData, process.env.GROUP_NAME || 'USERS'),
     userData
   );
   
   const profileResult = await handleOperation(
     'Profile creation',
-    () => createUserProfile(userData, env.GROUP_NAME),
+    () => createUserProfile(userData, process.env.GROUP_NAME || 'USERS'),
     userData
   );
   

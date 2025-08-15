@@ -16,7 +16,7 @@ export const auth = defineAuth({
       required: true,
     },
   },
-  groups: ['USERS', 'ADMINS', 'PREMIUM'],
+  groups: ['BASIC', 'ADMINS', 'PREMIUM'],
   triggers: {
     postConfirmation,
   },

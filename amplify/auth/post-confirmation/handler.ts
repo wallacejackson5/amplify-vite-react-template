@@ -51,7 +51,7 @@ async function createUserProfile(userData: UserData, groupName: string): Promise
     userId: userData.userName,
     email: userData.email,
     givenName: userData.givenName,
-    plan: groupName === 'PREMIUM_USERS' ? 'PREMIUM' as const : 'FREE' as const,
+    plan: groupName === 'PREMIUM' ? 'PREMIUM' as const : 'BASIC' as const,
     visibilityBoost: false,
     language: 'en' // Default language
   };
@@ -109,8 +109,8 @@ async function handleOperation<T>(
 /**
  * Main post-confirmation trigger handler
  * Orchestrates user group assignment and profile creation
- * Groups defined in auth config: ['USERS', 'ADMINS', 'PREMIUM_USERS']
- * Default group: 'USERS' (defined in environment variable)
+ * Groups defined in auth config: ['BASIC', 'ADMINS', 'PREMIUM']
+ * Default group: 'BASIC' (defined in environment variable)
  */
 export const handler: PostConfirmationTriggerHandler = async (event) => {
   const userData = extractUserData(event);
@@ -119,13 +119,13 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
   // Execute both operations, logging failures but not blocking user registration
   const groupResult = await handleOperation(
     'Group assignment',
-    () => addUserToGroup(userData, process.env.GROUP_NAME || 'USERS'),
+    () => addUserToGroup(userData, process.env.GROUP_NAME || 'BASIC'),
     userData
   );
   
   const profileResult = await handleOperation(
     'Profile creation',
-    () => createUserProfile(userData, process.env.GROUP_NAME || 'USERS'),
+    () => createUserProfile(userData, process.env.GROUP_NAME || 'BASIC'),
     userData
   );
   

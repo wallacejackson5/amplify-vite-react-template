@@ -19,12 +19,12 @@ const schema = a.schema({
       userId: a.string().required(),
       email: a.string().required(),
       givenName: a.string(),
-      plan: a.enum(['FREE', 'PREMIUM']),
+      plan: a.enum(['BASIC', 'PREMIUM']),
       visibilityBoost: a.boolean(),
       language: a.string(),
     })
     .authorization((allow) => [
-      allow.publicApiKey(), // Temporarily use public access
+      allow.publicApiKey(),
     ]),
 });
 

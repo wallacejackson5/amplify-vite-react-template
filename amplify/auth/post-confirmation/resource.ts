@@ -6,7 +6,6 @@ export const postConfirmation = defineFunction({
   environment: {
     GROUP_NAME: 'USERS'
   },
-  resourceGroupName: 'auth',
   // Timeout increased to accommodate database operations
   timeoutSeconds: 30
 });

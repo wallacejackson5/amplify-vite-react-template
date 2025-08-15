@@ -50,6 +50,7 @@ async function createUserProfile(userData: UserData, groupName: string): Promise
   const userProfile = {
     userId: userData.userName,
     email: userData.email,
+    userPoolId: userData.userPoolId,
     givenName: userData.givenName,
     plan: groupName === 'PREMIUM' ? 'PREMIUM' as const : 'BASIC' as const,
     visibilityBoost: false,
@@ -113,8 +114,22 @@ async function handleOperation<T>(
  * Default group: 'BASIC' (defined in environment variable)
  */
 export const handler: PostConfirmationTriggerHandler = async (event) => {
+  // Add comprehensive logging for debugging
+  console.log('🚀 Post-confirmation trigger started', {
+    eventType: event.triggerSource,
+    userName: event.userName,
+    userPoolId: event.userPoolId,
+    environment: {
+      GROUP_NAME: process.env.GROUP_NAME,
+      AMPLIFY_DATA_GRAPHQL_ENDPOINT: process.env.AMPLIFY_DATA_GRAPHQL_ENDPOINT,
+      AWS_REGION: process.env.AWS_REGION
+    }
+  });
+
   const userData = extractUserData(event);
-  console.log(`Starting post-confirmation process for user: ${userData.userName}`);
+  console.log(`Starting post-confirmation process for user: ${userData.userName}`, {
+    userData
+  });
   
   // Execute both operations, logging failures but not blocking user registration
   const groupResult = await handleOperation(

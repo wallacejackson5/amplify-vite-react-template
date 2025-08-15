@@ -1,5 +1,5 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
-import { postConfirmation } from "../auth/post-confirmation/resource";
+// import { postConfirmation } from "../auth/post-confirmation/resource"; // Temporarily commented out
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -24,8 +24,7 @@ const schema = a.schema({
       language: a.string(),
     })
     .authorization((allow) => [
-      allow.authenticated(),
-      allow.custom()
+      allow.publicApiKey(), // Temporarily use public access
     ]),
 });
 
@@ -35,13 +34,8 @@ export const data = defineData({
   schema,
   authorizationModes: {
     defaultAuthorizationMode: "apiKey",
-    // API Key is used for a.allow.public() rules
     apiKeyAuthorizationMode: {
       expiresInDays: 30,
-    },
-    // Lambda authorization for Lambda functions
-    lambdaAuthorizationMode: {
-      function: postConfirmation,
     },
   },
 });

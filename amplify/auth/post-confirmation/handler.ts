@@ -54,7 +54,7 @@ async function createUserProfile(userData: UserData, groupName: string): Promise
     givenName: userData.givenName,
     plan: groupName === 'PREMIUM' ? 'PREMIUM' as const : 'BASIC' as const,
     visibilityBoost: false,
-    language: 'en'
+    language: 'en' // Default language
   };
 
   const profileResponse = await dataClient.models.UserProfile.create(userProfile);
@@ -70,8 +70,6 @@ async function createUserProfile(userData: UserData, groupName: string): Promise
     });
     throw new Error(`Failed to create user profile: ${profileResponse.errors?.map((e: any) => e.message).join(', ')}`);
   }
-  
-  console.log(`✅ UserProfile created for ${userData.userName}`);
 }
 
 /**
@@ -90,7 +88,7 @@ function extractUserData(event: Parameters<PostConfirmationTriggerHandler>[0]): 
 }
 
 /**
- * Safely executes an operation without blocking user registration
+ * Handles a single operation with error logging
  */
 async function handleOperation<T>(
   operationName: string,
@@ -109,9 +107,29 @@ async function handleOperation<T>(
   }
 }
 
+/**
+ * Main post-confirmation trigger handler
+ * Orchestrates user group assignment and profile creation
+ * Groups defined in auth config: ['BASIC', 'ADMINS', 'PREMIUM']
+ * Default group: 'BASIC' (defined in environment variable)
+ */
 export const handler: PostConfirmationTriggerHandler = async (event) => {
+  // Add comprehensive logging for debugging
+  console.log('🚀 Post-confirmation trigger started', {
+    eventType: event.triggerSource,
+    userName: event.userName,
+    userPoolId: event.userPoolId,
+    environment: {
+      GROUP_NAME: process.env.GROUP_NAME,
+      AMPLIFY_DATA_GRAPHQL_ENDPOINT: process.env.AMPLIFY_DATA_GRAPHQL_ENDPOINT,
+      AWS_REGION: process.env.AWS_REGION
+    }
+  });
+
   const userData = extractUserData(event);
-  const groupName = process.env.GROUP_NAME || 'BASIC';
+  console.log(`Starting post-confirmation process for user: ${userData.userName}`, {
+    userData
+  });
   
   // Execute both operations, logging failures but not blocking user registration
   const groupResult = await handleOperation(

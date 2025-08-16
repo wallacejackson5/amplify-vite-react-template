@@ -2,29 +2,17 @@ import type { PostConfirmationTriggerHandler } from 'aws-lambda';
 import { type Schema } from "../../data/resource";
 import { generateClient } from "aws-amplify/data";
 import { Amplify } from 'aws-amplify';
-import type { ResourcesConfig } from 'aws-amplify';
 import {
   CognitoIdentityProviderClient,
   AdminAddUserToGroupCommand
 } from '@aws-sdk/client-cognito-identity-provider';
+import outputs from "../../../amplify_outputs.json";
 
 const cognitoClient = new CognitoIdentityProviderClient();
 
-const amplifyConfig: ResourcesConfig = {
-  API: {
-    GraphQL: {
-      endpoint: process.env.AMPLIFY_DATA_GRAPHQL_ENDPOINT || '',
-      region: process.env.AWS_REGION || '',
-      defaultAuthMode: 'apiKey' as const,
-      apiKey: process.env.AMPLIFY_DATA_API_KEY || ''
-    }
-  }
-};
+Amplify.configure(outputs);
 
-// Configure Amplify
-Amplify.configure(amplifyConfig);
-
-// Initialize Amplify data client for Lambda function
+// Initialize Amplify data client for Lambda function using API key
 const dataClient = generateClient<Schema>({
   authMode: 'apiKey'
 });
@@ -123,6 +111,14 @@ async function handleOperation<T>(
 export const handler: PostConfirmationTriggerHandler = async (event) => {
   const userData = extractUserData(event);
   console.log(`Starting post-confirmation process for user: ${userData.userName}`);
+  
+  // Debug: Log available environment variables
+  console.log('Available environment variables:', {
+    AMPLIFY_DATA_GRAPHQL_ENDPOINT: process.env.AMPLIFY_DATA_GRAPHQL_ENDPOINT,
+    AMPLIFY_DATA_API_KEY: process.env.AMPLIFY_DATA_API_KEY,
+    AWS_REGION: process.env.AWS_REGION,
+    GROUP_NAME: process.env.GROUP_NAME
+  });
   
   // Execute both operations, logging failures but not blocking user registration
   const groupResult = await handleOperation(

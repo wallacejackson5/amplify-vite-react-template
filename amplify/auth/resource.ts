@@ -10,7 +10,6 @@ export const auth = defineAuth({
     email: true,
   },
   userAttributes: {
-    // Maps to Cognito standard attribute 'email'
     email: {
       mutable: true,
       required: true,

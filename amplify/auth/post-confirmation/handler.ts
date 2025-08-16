@@ -20,7 +20,6 @@ interface UserData {
   userName: string;
   userPoolId: string;
   email: string;
-  givenName: string;
 }
 
 /**
@@ -50,10 +49,8 @@ async function createUserProfile(userData: UserData, groupName: string): Promise
   const userProfile = {
     userId: userData.userName,
     email: userData.email,
-    givenName: userData.givenName,
     plan: groupName === 'PREMIUM' ? 'PREMIUM' as const : 'BASIC' as const,
-    visibilityBoost: false,
-    language: 'en' // Default language
+    language: 'en'
   };
 
   const profileResponse = await dataClient.models.UserProfile.create(userProfile);
@@ -82,7 +79,6 @@ function extractUserData(event: Parameters<PostConfirmationTriggerHandler>[0]): 
     userName,
     userPoolId,
     email: userAttributes.email || '',
-    givenName: userAttributes.given_name || userAttributes.name || ''
   };
 }
 
@@ -106,12 +102,6 @@ async function handleOperation<T>(
   }
 }
 
-/**
- * Main post-confirmation trigger handler
- * Orchestrates user group assignment and profile creation
- * Groups defined in auth config: ['BASIC', 'ADMINS', 'PREMIUM']
- * Default group: 'BASIC' (defined in environment variable)
- */
 export const handler: PostConfirmationTriggerHandler = async (event) => {
   const userData = extractUserData(event);
   console.log(`Starting post-confirmation process for user: ${userData.userName}`);

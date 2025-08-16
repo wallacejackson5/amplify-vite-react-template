@@ -10,34 +10,16 @@ import {
 
 const cognitoClient = new CognitoIdentityProviderClient();
 
-// Load configuration - works both locally and in production
-let amplifyConfig: ResourcesConfig;
-if (process.env.AMPLIFY_DATA_GRAPHQL_ENDPOINT) {
-  // Production: Use environment variables
-  amplifyConfig = {
-    API: {
-      GraphQL: {
-        endpoint: process.env.AMPLIFY_DATA_GRAPHQL_ENDPOINT,
-        region: process.env.AWS_REGION || 'us-east-1',
-        defaultAuthMode: 'apiKey' as const,
-        apiKey: process.env.AMPLIFY_DATA_API_KEY
-      }
+const amplifyConfig: ResourcesConfig = {
+  API: {
+    GraphQL: {
+      endpoint: process.env.AMPLIFY_DATA_GRAPHQL_ENDPOINT || '',
+      region: process.env.AWS_REGION || '',
+      defaultAuthMode: 'apiKey' as const,
+      apiKey: process.env.AMPLIFY_DATA_API_KEY || ''
     }
-  };
-} else {
-  // Local development: Use amplify_outputs.json
-  const outputs = require('../../amplify_outputs.json');
-  amplifyConfig = {
-    API: {
-      GraphQL: {
-        endpoint: outputs.data.url,
-        region: outputs.data.aws_region,
-        defaultAuthMode: 'apiKey' as const,
-        apiKey: outputs.data.api_key
-      }
-    }
-  };
-}
+  }
+};
 
 // Configure Amplify
 Amplify.configure(amplifyConfig);

@@ -1,6 +1,8 @@
 import type { PostConfirmationTriggerHandler } from 'aws-lambda';
 import { type Schema } from "../../data/resource";
 import { generateClient } from "aws-amplify/data";
+import { Amplify } from 'aws-amplify';
+import type { ResourcesConfig } from 'aws-amplify';
 import {
   CognitoIdentityProviderClient,
   AdminAddUserToGroupCommand
@@ -8,9 +10,41 @@ import {
 
 const cognitoClient = new CognitoIdentityProviderClient();
 
+// Load configuration - works both locally and in production
+let amplifyConfig: ResourcesConfig;
+if (process.env.AMPLIFY_DATA_GRAPHQL_ENDPOINT) {
+  // Production: Use environment variables
+  amplifyConfig = {
+    API: {
+      GraphQL: {
+        endpoint: process.env.AMPLIFY_DATA_GRAPHQL_ENDPOINT,
+        region: process.env.AWS_REGION || 'us-east-1',
+        defaultAuthMode: 'apiKey' as const,
+        apiKey: process.env.AMPLIFY_DATA_API_KEY
+      }
+    }
+  };
+} else {
+  // Local development: Use amplify_outputs.json
+  const outputs = require('../../amplify_outputs.json');
+  amplifyConfig = {
+    API: {
+      GraphQL: {
+        endpoint: outputs.data.url,
+        region: outputs.data.aws_region,
+        defaultAuthMode: 'apiKey' as const,
+        apiKey: outputs.data.api_key
+      }
+    }
+  };
+}
+
+// Configure Amplify
+Amplify.configure(amplifyConfig);
+
 // Initialize Amplify data client for Lambda function
 const dataClient = generateClient<Schema>({
-  authMode: 'iam'
+  authMode: 'apiKey'
 });
 
 /**
@@ -53,7 +87,9 @@ async function createUserProfile(userData: UserData, groupName: string): Promise
     language: 'en'
   };
 
+  console.log(`--> Testing userProfile: ${userProfile}`);
   const profileResponse = await dataClient.models.UserProfile.create(userProfile);
+  console.log(`--> Profile response: ${profileResponse}`);
   
   if (profileResponse.data) {
     console.log(`✅ UserProfile created successfully for user ${userData.userName}`, {

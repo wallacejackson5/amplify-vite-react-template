@@ -4,7 +4,7 @@ export const postConfirmation = defineFunction({
   name: 'post-confirmation',
   // Default group for new users - matches the groups defined in auth config
   environment: {
-    GROUP_NAME: 'BASIC'
+    GROUP_NAME: 'USERS'
   },
   // Timeout increased to accommodate database operations
   timeoutSeconds: 30

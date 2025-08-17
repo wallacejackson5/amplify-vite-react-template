@@ -25,8 +25,11 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
 
   async function createUserProfile() {
     const userProfile = await clientData.models.UserProfile.create({
+      sub: event.request.userAttributes.sub,
       email: event.request.userAttributes.email,
-      userId: `${event.request.userAttributes.sub}::${event.userName}`,
+      userName: event.request.userAttributes.preferred_username,
+      plan: env.GROUP_NAME as 'BASIC' | 'PREMIUM',
+      language: 'en-US',
     });
     console.log('✅ UserProfile created successfully for user', userProfile.data?.id);
   }

@@ -10,8 +10,9 @@ const schema = a.schema({
   
   UserProfile: a
     .model({
-      userId: a.string().required(),
+      sub: a.string().required(),
       email: a.string().required(),
+      userName: a.string().required(),
       plan: a.enum(['BASIC', 'PREMIUM']),
       language: a.string(),
     })

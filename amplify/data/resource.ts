@@ -10,10 +10,13 @@ const schema = a.schema({
   
   UserProfile: a
     .model({
-      userId: a.string().required(),
+      sub: a.string().required(),
+      username: a.string().required(),
       email: a.string().required(),
       plan: a.enum(['BASIC', 'PREMIUM']),
       language: a.string(),
+      createdAt: a.date(),
+      updatedAt: a.date(),
     })
     .authorization((allow) => [
       allow.publicApiKey(),

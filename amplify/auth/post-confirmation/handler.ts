@@ -17,27 +17,68 @@ const { resourceConfig, libraryOptions } = await getAmplifyDataClientConfig(
 Amplify.configure(resourceConfig, libraryOptions);
 const clientData = generateClient<Schema>();
 
-export const handler: PostConfirmationTriggerHandler = async (event) => {
-  await addUserToGroup();
-  await createUserProfile();
-  
-  return event;
+async function createUserProfile(event: any) {
+  try {
+    const now = new Date().toISOString();
 
-  async function createUserProfile() {
+    const actualUsername = 
+      event.request.userAttributes.preferred_username ||
+      event.request.userAttributes.nickname ||
+      event.request.userAttributes.email?.split('@')[0] ||
+      event.userName;
+    
+    console.log('📝 Creating profile with username:', actualUsername);
+    
     const userProfile = await clientData.models.UserProfile.create({
+      sub: event.request.userAttributes.sub,
+      username: actualUsername,
       email: event.request.userAttributes.email,
-      userId: `${event.request.userAttributes.sub}::${event.userName}`,
+      plan: 'BASIC',
+      createdAt: now,
+      updatedAt: now,
     });
     console.log('✅ UserProfile created successfully for user', userProfile.data?.id);
+    return userProfile;
+  } catch (error) {
+    console.error('❌ Error creating UserProfile:', error);
+    throw error;
   }
+}
 
-  async function addUserToGroup() {
+async function addUserToGroup(event: any) {
+  try {
     const command = new AdminAddUserToGroupCommand({
       GroupName: env.GROUP_NAME,
       Username: event.userName,
       UserPoolId: event.userPoolId
     });
     const response = await client.send(command);
-    console.log('✅ Processed', response.$metadata.requestId);
+    console.log('✅ User added to group successfully', response.$metadata.requestId);
+    return response;
+  } catch (error) {
+    console.error('❌ Error adding user to group:', error);
+    throw error;
+  }
+}
+
+export const handler: PostConfirmationTriggerHandler = async (event) => {
+  try {
+    // Log the full event structure for debugging
+    console.log('🚀 Starting post-confirmation process');
+    console.log('Internal Username (UUID):', event.userName);
+    console.log('User Attributes:', JSON.stringify(event.request.userAttributes, null, 2));
+    
+    // Execute both operations
+    await Promise.all([
+      addUserToGroup(event),
+      createUserProfile(event)
+    ]);
+    
+    console.log('✅ Post-confirmation process completed successfully');
+    return event;
+  } catch (error) {
+    console.error('❌ Post-confirmation process failed:', error);
+    // Don't throw - return event to prevent blocking user confirmation
+    return event;
   }
 };

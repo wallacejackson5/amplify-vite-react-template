@@ -1,3 +1,6 @@
+install:
+	npm install
+
 start:
 	npm run dev
 
@@ -6,3 +9,6 @@ sandbox:
 
 delete:
 	npx ampx sandbox delete
+
+amplifyProfile:
+	npx ampx configure profile

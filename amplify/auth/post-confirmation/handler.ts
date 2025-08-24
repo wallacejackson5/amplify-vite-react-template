@@ -20,18 +20,9 @@ const clientData = generateClient<Schema>();
 async function createUserProfile(event: any) {
   try {
     const now = new Date().toISOString();
-
-    const actualUsername = 
-      event.request.userAttributes.preferred_username ||
-      event.request.userAttributes.nickname ||
-      event.request.userAttributes.email?.split('@')[0] ||
-      event.userName;
-    
-    console.log('📝 Creating profile with username:', actualUsername);
     
     const userProfile = await clientData.models.UserProfile.create({
       sub: event.request.userAttributes.sub,
-      username: actualUsername,
       email: event.request.userAttributes.email,
       plan: 'BASIC',
       createdAt: now,

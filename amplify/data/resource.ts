@@ -11,7 +11,6 @@ const schema = a.schema({
   UserProfile: a
     .model({
       sub: a.string().required(),
-      username: a.string().required(),
       email: a.string().required(),
       plan: a.enum(['BASIC', 'PREMIUM']),
       language: a.string(),

@@ -14,6 +14,10 @@ export const auth = defineAuth({
       mutable: true,
       required: true,
     },
+    birthdate: {
+      mutable: true,
+      required: true,
+    },
   },
   groups: ['BASIC', 'ADMINS', 'PREMIUM'],
   triggers: {

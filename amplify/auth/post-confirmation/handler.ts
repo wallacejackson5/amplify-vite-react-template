@@ -24,6 +24,7 @@ async function createUserProfile(event: any) {
     const userProfile = await clientData.models.UserProfile.create({
       sub: event.request.userAttributes.sub,
       email: event.request.userAttributes.email,
+      birthdate: event.request.userAttributes.birthdate,
       plan: 'BASIC',
       createdAt: now,
       updatedAt: now,

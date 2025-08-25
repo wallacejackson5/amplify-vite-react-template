@@ -12,6 +12,7 @@ const schema = a.schema({
     .model({
       sub: a.string().required(),
       email: a.string().required(),
+      birthdate: a.date().required(),
       plan: a.enum(['BASIC', 'PREMIUM']),
       language: a.string(),
       createdAt: a.date(),

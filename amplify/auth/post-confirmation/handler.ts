@@ -21,27 +21,31 @@ async function createUserProfile(event: any) {
   try {
     const now = new Date();
     
-    // Parse the birthdate string to a Date object
     const birthdateStr = event.request.userAttributes.birthdate;
-    const birthdate = new Date(birthdateStr);
     
     console.log('📝 Creating UserProfile with data:', {
       sub: event.request.userAttributes.sub,
       email: event.request.userAttributes.email,
-      birthdate: birthdate.toISOString(),
+      birthdate: birthdateStr,
       plan: 'BASIC'
     });
     
     const userProfile = await clientData.models.UserProfile.create({
       sub: event.request.userAttributes.sub,
       email: event.request.userAttributes.email,
-      birthdate: birthdate.toISOString(),
+      birthdate: birthdateStr,
       plan: 'BASIC',
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
     });
     
-    console.log('✅ UserProfile created successfully:', JSON.stringify(userProfile, null, 2));
+    // Check if the operation was successful
+    if (userProfile.errors && userProfile.errors.length > 0) {
+      console.error('❌ UserProfile creation failed with errors:', JSON.stringify(userProfile.errors, null, 2));
+      throw new Error(`UserProfile creation failed: ${userProfile.errors.map(e => e.message).join(', ')}`);
+    }
+    
+    console.log('✅ UserProfile created successfully:', JSON.stringify(userProfile.data, null, 2));
     return userProfile;
   } catch (error) {
     console.error('❌ Error creating UserProfile:', error);

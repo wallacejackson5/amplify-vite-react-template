@@ -19,7 +19,8 @@ const schema = a.schema({
       updatedAt: a.date(),
     })
     .authorization((allow) => [
-      allow.publicApiKey(),
+      allow.owner(),
+      allow.publicApiKey()
     ]),
 }).authorization((allow) => [allow.resource(postConfirmation)]);
 

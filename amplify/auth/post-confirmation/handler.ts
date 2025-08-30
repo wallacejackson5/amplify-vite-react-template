@@ -19,20 +19,34 @@ const clientData = generateClient<Schema>();
 
 async function createUserProfile(event: any) {
   try {
-    const now = new Date().toISOString();
+    const now = new Date();
+    
+    // Parse the birthdate string to a Date object
+    const birthdateStr = event.request.userAttributes.birthdate;
+    const birthdate = new Date(birthdateStr);
+    
+    console.log('📝 Creating UserProfile with data:', {
+      sub: event.request.userAttributes.sub,
+      email: event.request.userAttributes.email,
+      birthdate: birthdate.toISOString(),
+      plan: 'BASIC'
+    });
     
     const userProfile = await clientData.models.UserProfile.create({
       sub: event.request.userAttributes.sub,
       email: event.request.userAttributes.email,
-      birthdate: event.request.userAttributes.birthdate,
+      birthdate: birthdate.toISOString(),
       plan: 'BASIC',
-      createdAt: now,
-      updatedAt: now,
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
     });
-    console.log('✅ UserProfile created successfully for user', userProfile.data?.id);
+    
+    console.log('✅ UserProfile created successfully:', JSON.stringify(userProfile, null, 2));
     return userProfile;
   } catch (error) {
     console.error('❌ Error creating UserProfile:', error);
+    console.error('❌ Error details:', JSON.stringify(error, null, 2));
+    console.error('❌ Event data:', JSON.stringify(event.request.userAttributes, null, 2));
     throw error;
   }
 }

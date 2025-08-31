@@ -27,6 +27,20 @@ const schema = a.schema({
       systemPrompt: 'You are a helpful assistant',
     })
     .authorization((allow) => allow.owner()),
+    
+    generateAnswer: a.generation({
+      aiModel: a.ai.model('Claude 3.5 Haiku'),
+      systemPrompt: 'You are a helpful assistant that generates answers.',
+    })
+    .arguments({
+      description: a.string(),
+    })
+    .returns(
+      a.customType({
+        answer: a.string(),
+      })
+    )
+    .authorization((allow) => allow.authenticated()),
 }).authorization((allow) => [allow.resource(postConfirmation)]);
 
 export type Schema = ClientSchema<typeof schema>;

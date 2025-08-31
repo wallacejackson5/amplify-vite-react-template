@@ -20,15 +20,7 @@ const clientData = generateClient<Schema>();
 async function createUserProfile(event: any) {
   try {
     const now = new Date();
-    
     const birthdateStr = event.request.userAttributes.birthdate;
-    
-    console.log('📝 Creating UserProfile with data:', {
-      sub: event.request.userAttributes.sub,
-      email: event.request.userAttributes.email,
-      birthdate: birthdateStr,
-      plan: 'BASIC'
-    });
     
     const userProfile = await clientData.models.UserProfile.create({
       sub: event.request.userAttributes.sub,
@@ -39,7 +31,6 @@ async function createUserProfile(event: any) {
       updatedAt: now.toISOString(),
     });
     
-    // Check if the operation was successful
     if (userProfile.errors && userProfile.errors.length > 0) {
       console.error('❌ UserProfile creation failed with errors:', JSON.stringify(userProfile.errors, null, 2));
       throw new Error(`UserProfile creation failed: ${userProfile.errors.map(e => e.message).join(', ')}`);
@@ -73,7 +64,6 @@ async function addUserToGroup(event: any) {
 
 export const handler: PostConfirmationTriggerHandler = async (event) => {
   try {
-    // Log the full event structure for debugging
     console.log('🚀 Starting post-confirmation process');
     console.log('Internal Username (UUID):', event.userName);
     console.log('User Attributes:', JSON.stringify(event.request.userAttributes, null, 2));
@@ -88,7 +78,6 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
     return event;
   } catch (error) {
     console.error('❌ Post-confirmation process failed:', error);
-    // Don't throw - return event to prevent blocking user confirmation
     return event;
   }
 };

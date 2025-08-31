@@ -18,17 +18,11 @@ Amplify.configure(resourceConfig, libraryOptions);
 const clientData = generateClient<Schema>();
 
 async function createUserProfile(event: any) {
-  try {
-    const now = new Date();
-    const birthdateStr = event.request.userAttributes.birthdate;
-    
+  try {    
     const userProfile = await clientData.models.UserProfile.create({
       sub: event.request.userAttributes.sub,
       email: event.request.userAttributes.email,
-      birthdate: birthdateStr,
-      plan: 'BASIC',
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString(),
+      birthdate: event.request.userAttributes.birthdate
     });
     
     if (userProfile.errors && userProfile.errors.length > 0) {
@@ -68,7 +62,6 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
     console.log('Internal Username (UUID):', event.userName);
     console.log('User Attributes:', JSON.stringify(event.request.userAttributes, null, 2));
     
-    // Execute both operations
     await Promise.all([
       addUserToGroup(event),
       createUserProfile(event)

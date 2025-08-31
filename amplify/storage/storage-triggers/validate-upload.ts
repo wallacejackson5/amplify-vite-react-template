@@ -3,7 +3,7 @@ import { S3Client, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client
 
 const s3Client = new S3Client({});
 
-const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB in bytes
+const MAX_FILE_SIZE = 200 * 1024 * 1024; // 200MB in bytes
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png'];
 
 interface ValidationResult {
@@ -13,13 +13,13 @@ interface ValidationResult {
 }
 
 /**
- * Validates file size against the 500MB limit
+ * Validates file size against the 200MB limit
  */
 function validateFileSize(size: number): ValidationResult {
   if (size > MAX_FILE_SIZE) {
     return {
       isValid: false,
-      error: `File size ${(size / 1024 / 1024).toFixed(2)}MB exceeds the 500MB limit`
+      error: `File size ${(size / 1024 / 1024).toFixed(2)}MB exceeds the 200MB limit`
     };
   }
   return { isValid: true };

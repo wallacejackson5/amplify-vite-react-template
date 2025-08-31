@@ -40,7 +40,7 @@ function App() {
       
       <div style={{ margin: '20px 0', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
         <h2>Profile Picture Upload</h2>
-        <p>Upload your profile pictures (JPEG/PNG, max 500MB)</p>
+        <p>Upload your profile pictures (JPEG/PNG, max 200MB)</p>
         <FileUploader
           acceptedFileTypes={['image/jpeg', 'image/png']}
           path={`protected/profile-pictures/${user?.userId}/`}

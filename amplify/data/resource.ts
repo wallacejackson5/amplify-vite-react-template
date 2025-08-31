@@ -21,6 +21,12 @@ const schema = a.schema({
       allow.owner(),
       allow.publicApiKey()
     ]),
+    
+  chat: a.conversation({
+      aiModel: a.ai.model('Claude 3.5 Haiku'),
+      systemPrompt: 'You are a helpful assistant',
+    })
+    .authorization((allow) => allow.owner()),
 }).authorization((allow) => [allow.resource(postConfirmation)]);
 
 export type Schema = ClientSchema<typeof schema>;

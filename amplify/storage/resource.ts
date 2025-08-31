@@ -1,4 +1,5 @@
 import { defineStorage, defineFunction } from '@aws-amplify/backend';
+import { USER_ROLES } from "../shared/constants/groups";
 
 export const storage = defineStorage({
     name: 'photos',
@@ -6,12 +7,13 @@ export const storage = defineStorage({
     access: (allow) => ({
       'protected/profile-pictures/{entity_id}/*': [
         allow.authenticated.to(['read']),
-        allow.entity('identity').to(['read', 'write', 'delete'])
+        allow.entity('identity').to(['read', 'write', 'delete']),
+        allow.groups(USER_ROLES).to(['read', 'write', 'delete'])
       ],
       'public/*': [
         allow.guest.to(['read']),
         allow.authenticated.to(['read']),
-        allow.groups(['ADMIN', 'MODERATOR']).to(['read', 'write', 'delete'])
+        allow.groups(USER_ROLES).to(['read', 'write', 'delete'])
       ],
     }),
     triggers: {

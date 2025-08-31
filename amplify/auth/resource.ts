@@ -1,5 +1,6 @@
 import { defineAuth } from '@aws-amplify/backend';
 import { postConfirmation } from "./post-confirmation/resource";
+import { USER_ROLES } from "../shared/constants/groups";
 
 /**
  * Define and configure your auth resource
@@ -19,7 +20,7 @@ export const auth = defineAuth({
       required: true,
     },
   },
-  groups: ['BASIC', 'ADMIN', 'MODERATOR', 'PREMIUM'],
+  groups: [...USER_ROLES],
   triggers: {
     postConfirmation,
   },

@@ -35,8 +35,8 @@ async function createUserProfile(event: any) {
       email: event.request.userAttributes.email,
       birthdate: birthdateStr,
       plan: 'BASIC',
-      createdAt: now.toISOString().split('T')[0],
-      updatedAt: now.toISOString().split('T')[0],
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
     });
     
     // Check if the operation was successful

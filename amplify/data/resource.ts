@@ -14,9 +14,8 @@ const schema = a.schema({
       email: a.string().required(),
       birthdate: a.date().required(),
       plan: a.enum(['BASIC', 'PREMIUM']),
-      language: a.string(),
-      createdAt: a.date(),
-      updatedAt: a.date(),
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
     })
     .authorization((allow) => [
       allow.owner(),
